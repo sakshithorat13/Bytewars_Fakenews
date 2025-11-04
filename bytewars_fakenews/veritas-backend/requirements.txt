@@ -2,8 +2,8 @@
 fastapi[all]
 python-dotenv
 beautifulsoup4
-google-api-python-client
 Pillow
-groq
-google-generativeai
 requests
+huggingface_hub
+transformers
+google-generativeai

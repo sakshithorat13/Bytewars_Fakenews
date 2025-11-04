@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "veritas-backend/main.py": {
+      "runtime": "python3.9"
+    }
+  },
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/veritas-backend/main.py" },
+    { "src": "/(.*)", "dest": "/veritas-backend/main.py" }
+  ]
+}

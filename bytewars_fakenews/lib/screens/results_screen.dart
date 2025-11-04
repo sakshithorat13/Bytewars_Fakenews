@@ -14,21 +14,13 @@ class ResultsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue.shade700, Colors.blue.shade500],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        backgroundColor: Colors.blue.shade700,
         leading: IconButton(
           icon: const Icon(LucideIcons.arrowLeft, color: Colors.white),
           onPressed: onBack,
         ),
         title: Text(
-          'Analysis Results',
+          'Fact-Check Results',
           style: GoogleFonts.lato(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -48,11 +40,15 @@ class ResultsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildHeroSection(context),
-              const SizedBox(height: 24),
-              _buildBreakdownSection(context),
-              const SizedBox(height: 24),
-              if (result.context != null) _buildContextSection(context),
+              _buildScoreCard(context),
+              const SizedBox(height: 20),
+              _buildSummaryCard(context),
+              const SizedBox(height: 20),
+              _buildDetailedAnalysis(context),
+              if (result.context != null && result.context!.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                _buildSourceCard(context),
+              ],
               const SizedBox(height: 80),
             ],
           ),
@@ -60,11 +56,11 @@ class ResultsScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // Share functionality would go here
+          // Share functionality
         },
         icon: const Icon(LucideIcons.share),
         label: Text(
-          'Share Report',
+          'Share',
           style: GoogleFonts.lato(fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.blue.shade600,
@@ -164,7 +160,7 @@ class ResultsScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          result.overallVerdict.toUpperCase(),
+                          result.scoreDescription.toUpperCase(),
                           style: GoogleFonts.lato(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -174,7 +170,7 @@ class ResultsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        result.summary,
+                        result.friendlySummary,
                         style: GoogleFonts.lato(
                           fontSize: 15,
                           color: Colors.grey.shade700,
@@ -265,7 +261,7 @@ class ResultsScreen extends StatelessWidget {
                     children: [
                       Chip(
                         label: Text(
-                          _getVerdictText(claim.verdict),
+                          claim.verdictText,
                           style: GoogleFonts.lato(
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
@@ -279,7 +275,7 @@ class ResultsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    claim.explanation,
+                    claim.friendlyExplanation,
                     style: GoogleFonts.lato(
                       fontSize: 14,
                       color: Colors.grey.shade700,
@@ -350,25 +346,16 @@ class ResultsScreen extends StatelessWidget {
     );
   }
 
-  String _getVerdictText(VerdictStatus verdict) {
-    switch (verdict) {
-      case VerdictStatus.Supported:
-        return 'SUPPORTED';
-      case VerdictStatus.Contradicted:
-        return 'CONTRADICTED';
-      case VerdictStatus.InsufficientInfo:
-        return 'INSUFFICIENT INFO';
-    }
-  }
-
   Color _getVerdictColor(VerdictStatus verdict) {
     switch (verdict) {
       case VerdictStatus.Supported:
         return Colors.green.shade600;
       case VerdictStatus.Contradicted:
         return Colors.red.shade600;
-      case VerdictStatus.InsufficientInfo:
+      case VerdictStatus.Mixed:
         return Colors.orange.shade600;
+      case VerdictStatus.InsufficientInfo:
+        return Colors.grey.shade600;
     }
   }
 
@@ -378,8 +365,205 @@ class ResultsScreen extends StatelessWidget {
         return LucideIcons.circleCheckBig;
       case VerdictStatus.Contradicted:
         return LucideIcons.circleX;
+      case VerdictStatus.Mixed:
+        return LucideIcons.circleAlert;
       case VerdictStatus.InsufficientInfo:
         return LucideIcons.circleAlert;
     }
+  }
+
+  Widget _buildScoreCard(BuildContext context) {
+    final scoreColor = result.score >= 70
+        ? Colors.green
+        : result.score >= 40
+            ? Colors.orange
+            : Colors.red;
+
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Text(
+              'Fact-Check Score',
+              style: GoogleFonts.lato(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const SizedBox(height: 16),
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: scoreColor.withOpacity(0.1),
+              child: Text(
+                '${result.score}',
+                style: GoogleFonts.lato(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: scoreColor,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              result.scoreDescription,
+              style: GoogleFonts.lato(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: scoreColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Summary',
+              style: GoogleFonts.lato(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              result.friendlySummary,
+              style: GoogleFonts.lato(
+                fontSize: 15,
+                color: Colors.grey.shade700,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailedAnalysis(BuildContext context) {
+    if (result.breakdown.isEmpty) {
+      return Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Analysis Details',
+                style: GoogleFonts.lato(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade800,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'No specific claims were identified for detailed analysis.',
+                style: GoogleFonts.lato(
+                  fontSize: 15,
+                  color: Colors.grey.shade600,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Detailed Analysis',
+              style: GoogleFonts.lato(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...result.breakdown.asMap().entries.map((entry) {
+              final index = entry.key;
+              final claim = entry.value;
+              return Padding(
+                padding: EdgeInsets.only(bottom: index < result.breakdown.length - 1 ? 16 : 0),
+                child: _buildClaimCard(context, claim),
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSourceCard(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.link,
+                  color: Colors.blue.shade600,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Source Information',
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: Text(
+                result.context ?? 'No source information available',
+                style: GoogleFonts.lato(
+                  fontSize: 14,
+                  color: Colors.blue.shade800,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
