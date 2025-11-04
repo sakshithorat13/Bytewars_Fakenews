@@ -7,7 +7,8 @@ class ResultsScreen extends StatelessWidget {
   final AnalysisResult result;
   final VoidCallback onBack;
 
-  const ResultsScreen({Key? key, required this.result, required this.onBack}) : super(key: key);
+  const ResultsScreen({Key? key, required this.result, required this.onBack})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -508,7 +509,8 @@ class ResultsScreen extends StatelessWidget {
               final index = entry.key;
               final claim = entry.value;
               return Padding(
-                padding: EdgeInsets.only(bottom: index < result.breakdown.length - 1 ? 16 : 0),
+                padding: EdgeInsets.only(
+                    bottom: index < result.breakdown.length - 1 ? 16 : 0),
                 child: _buildClaimCard(context, claim),
               );
             }).toList(),

@@ -18,7 +18,7 @@ class _InputScreenState extends State<InputScreen> {
   final TextEditingController _textController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  
+
   File? _selectedImage;
   String? _selectedImageBase64;
 
@@ -37,17 +37,17 @@ class _InputScreenState extends State<InputScreen> {
         maxHeight: 1920,
         imageQuality: 85,
       );
-      
+
       if (image != null) {
         final File imageFile = File(image.path);
         final List<int> imageBytes = await imageFile.readAsBytes();
         final String base64Image = base64Encode(imageBytes);
-        
+
         setState(() {
           _selectedImage = imageFile;
           _selectedImageBase64 = base64Image;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Image selected successfully!'),
@@ -407,7 +407,7 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Image preview or upload area
             GestureDetector(
               onTap: _showImageSourceDialog,
@@ -415,19 +415,21 @@ class _InputScreenState extends State<InputScreen> {
                 height: 240,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: _selectedImage != null ? Colors.green.shade300 : Colors.blue.shade300,
+                    color: _selectedImage != null
+                        ? Colors.green.shade300
+                        : Colors.blue.shade300,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(16),
                   gradient: LinearGradient(
-                    colors: _selectedImage != null 
+                    colors: _selectedImage != null
                         ? [Colors.green.shade50, Colors.green.shade100]
                         : [Colors.blue.shade50, Colors.blue.shade100],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: _selectedImage != null 
+                child: _selectedImage != null
                     ? Stack(
                         children: [
                           ClipRRect(
@@ -448,7 +450,8 @@ class _InputScreenState extends State<InputScreen> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: IconButton(
-                                icon: Icon(LucideIcons.x, color: Colors.white, size: 20),
+                                icon: Icon(LucideIcons.x,
+                                    color: Colors.white, size: 20),
                                 onPressed: () {
                                   setState(() {
                                     _selectedImage = null;
@@ -462,7 +465,8 @@ class _InputScreenState extends State<InputScreen> {
                             bottom: 8,
                             left: 8,
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.black54,
                                 borderRadius: BorderRadius.circular(12),
@@ -521,23 +525,29 @@ class _InputScreenState extends State<InputScreen> {
                       ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              onPressed: _selectedImageBase64 != null ? () {
-                widget.onAnalyze('image', _selectedImageBase64!);
-              } : null,
+              onPressed: _selectedImageBase64 != null
+                  ? () {
+                      widget.onAnalyze('image', _selectedImageBase64!);
+                    }
+                  : null,
               icon: Icon(
-                _selectedImage != null ? LucideIcons.search : LucideIcons.image, 
-                size: 20
-              ),
+                  _selectedImage != null
+                      ? LucideIcons.search
+                      : LucideIcons.image,
+                  size: 20),
               label: Text(
                 _selectedImage != null ? 'Analyze Image' : 'Select Image First',
-                style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600),
+                style:
+                    GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: _selectedImage != null ? Colors.blue.shade600 : Colors.grey.shade400,
+                backgroundColor: _selectedImage != null
+                    ? Colors.blue.shade600
+                    : Colors.grey.shade400,
                 foregroundColor: Colors.white,
                 elevation: _selectedImage != null ? 2 : 0,
                 shape: RoundedRectangleBorder(
@@ -545,7 +555,7 @@ class _InputScreenState extends State<InputScreen> {
                 ),
               ),
             ),
-            
+
             if (_selectedImage != null) ...[
               const SizedBox(height: 16),
               Container(
@@ -557,7 +567,8 @@ class _InputScreenState extends State<InputScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(LucideIcons.check, color: Colors.green.shade600, size: 20),
+                    Icon(LucideIcons.check,
+                        color: Colors.green.shade600, size: 20),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(

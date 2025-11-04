@@ -61,9 +61,10 @@ class _VeritasAppState extends State<VeritasApp> {
       if (response is! Map<String, dynamic>) {
         throw Exception('Invalid response format from server');
       }
-      
+
       // Check if it's an error response disguised as success
-      if (response.containsKey('detail') && response.containsKey('status_code')) {
+      if (response.containsKey('detail') &&
+          response.containsKey('status_code')) {
         throw Exception(response['detail'] ?? 'Server error occurred');
       }
 
@@ -75,10 +76,10 @@ class _VeritasAppState extends State<VeritasApp> {
       });
     } catch (e) {
       print('❌ Analysis failed: $e');
-      
+
       // Try to extract user-friendly error message
       String userFriendlyError = e.toString();
-      
+
       // Check if the error contains JSON detail
       if (userFriendlyError.contains('"detail":')) {
         try {
@@ -95,18 +96,23 @@ class _VeritasAppState extends State<VeritasApp> {
           print('Could not parse error details: $parseError');
         }
       }
-      
+
       // Make error more user-friendly
       if (userFriendlyError.contains('Resource exhausted')) {
-        userFriendlyError = 'The AI service is currently busy. Please try again in a few moments.';
-      } else if (userFriendlyError.contains('403') || userFriendlyError.contains('Forbidden')) {
-        userFriendlyError = 'Unable to access the webpage. The site may be blocking automated requests.';
+        userFriendlyError =
+            'The AI service is currently busy. Please try again in a few moments.';
+      } else if (userFriendlyError.contains('403') ||
+          userFriendlyError.contains('Forbidden')) {
+        userFriendlyError =
+            'Unable to access the webpage. The site may be blocking automated requests.';
       } else if (userFriendlyError.contains('timeout')) {
-        userFriendlyError = 'The request took too long. Please try again or check your internet connection.';
+        userFriendlyError =
+            'The request took too long. Please try again or check your internet connection.';
       } else if (userFriendlyError.contains('connection')) {
-        userFriendlyError = 'Cannot connect to the analysis server. Please ensure you\'re connected to the internet.';
+        userFriendlyError =
+            'Cannot connect to the analysis server. Please ensure you\'re connected to the internet.';
       }
-      
+
       setState(() {
         _errorMessage = userFriendlyError;
         _appState = AppState.error;

@@ -29,13 +29,15 @@ class ClaimAnalysis {
 
     try {
       return ClaimAnalysis(
-        claim: json['claim'] is String && json['claim'].isNotEmpty 
-            ? json['claim'] 
+        claim: json['claim'] is String && json['claim'].isNotEmpty
+            ? json['claim']
             : 'No specific claim identified',
-        verdict: parseVerdict(json['verdict']?.toString() ?? 'InsufficientInfo'),
-        explanation: json['explanation'] is String && json['explanation'].isNotEmpty 
-            ? json['explanation'] 
-            : 'Unable to provide detailed analysis.',
+        verdict:
+            parseVerdict(json['verdict']?.toString() ?? 'InsufficientInfo'),
+        explanation:
+            json['explanation'] is String && json['explanation'].isNotEmpty
+                ? json['explanation']
+                : 'Unable to provide detailed analysis.',
       );
     } catch (e) {
       print('Error parsing ClaimAnalysis: $e');
@@ -46,7 +48,7 @@ class ClaimAnalysis {
       );
     }
   }
-  
+
   String get verdictText {
     switch (verdict) {
       case VerdictStatus.Supported:
@@ -59,9 +61,10 @@ class ClaimAnalysis {
         return 'Needs More Info';
     }
   }
-  
+
   String get friendlyExplanation {
-    if (explanation.isEmpty || explanation == 'Unable to provide detailed analysis.') {
+    if (explanation.isEmpty ||
+        explanation == 'Unable to provide detailed analysis.') {
       switch (verdict) {
         case VerdictStatus.Supported:
           return 'This claim appears to be backed by available evidence.';
@@ -97,7 +100,8 @@ class AnalysisResult {
       // Provide safe defaults for all fields
       int score = 50;
       String overallVerdict = 'Needs Review';
-      String summary = 'Analysis completed but needs more information for detailed verification.';
+      String summary =
+          'Analysis completed but needs more information for detailed verification.';
       List<ClaimAnalysis> breakdown = [];
       String? context;
 
@@ -114,12 +118,15 @@ class AnalysisResult {
       }
 
       // Safely extract verdict
-      if (json.containsKey('overallVerdict') && json['overallVerdict'] is String) {
+      if (json.containsKey('overallVerdict') &&
+          json['overallVerdict'] is String) {
         overallVerdict = json['overallVerdict'];
       }
 
       // Safely extract summary
-      if (json.containsKey('summary') && json['summary'] is String && json['summary'].isNotEmpty) {
+      if (json.containsKey('summary') &&
+          json['summary'] is String &&
+          json['summary'].isNotEmpty) {
         summary = json['summary'];
       }
 
@@ -138,7 +145,8 @@ class AnalysisResult {
           ClaimAnalysis(
             claim: 'General content analysis',
             verdict: VerdictStatus.InsufficientInfo,
-            explanation: 'Unable to identify specific factual claims for detailed verification.',
+            explanation:
+                'Unable to identify specific factual claims for detailed verification.',
           )
         ];
       }
@@ -161,26 +169,28 @@ class AnalysisResult {
       return AnalysisResult(
         score: 50,
         overallVerdict: 'Analysis Error',
-        summary: 'There was an issue processing the analysis. Please try again.',
+        summary:
+            'There was an issue processing the analysis. Please try again.',
         breakdown: [
           ClaimAnalysis(
             claim: 'Unable to process content',
             verdict: VerdictStatus.InsufficientInfo,
-            explanation: 'An error occurred during analysis. Please try again with different content.',
+            explanation:
+                'An error occurred during analysis. Please try again with different content.',
           )
         ],
         context: null,
       );
     }
   }
-  
+
   String get friendlySummary {
     if (summary.isEmpty) {
       return getDefaultSummary();
     }
     return summary;
   }
-  
+
   String getDefaultSummary() {
     if (score >= 80) {
       return "The information appears to be largely accurate based on available evidence.";
@@ -194,7 +204,7 @@ class AnalysisResult {
       return "This content contains significant factual issues that contradict established evidence.";
     }
   }
-  
+
   String get scoreDescription {
     if (score >= 80) {
       return "Highly Reliable";

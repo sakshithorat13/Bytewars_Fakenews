@@ -7,7 +7,8 @@ class ResultsScreen extends StatelessWidget {
   final AnalysisResult result;
   final VoidCallback onBack;
 
-  const ResultsScreen({Key? key, required this.result, required this.onBack}) : super(key: key);
+  const ResultsScreen({Key? key, required this.result, required this.onBack})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -249,7 +250,7 @@ class ResultsScreen extends StatelessWidget {
 
   Widget _buildClaimCard(ClaimAnalysis claim, int index) {
     final verdictColor = _getVerdictColor(claim.verdict);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
