@@ -1,0 +1,9 @@
+# This file lists the Python packages needed for the Veritas backend.
+fastapi[all]
+python-dotenv
+beautifulsoup4
+Pillow
+requests
+huggingface_hub
+transformers
+google-generativeai
